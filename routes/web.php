@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WeatherController;
+use App\Http\Controllers\MapsController;
 
-Route::get('/weather', [WeatherController::class, 'index'])->name('weather.index');
-Route::post('/weather', [WeatherController::class, 'fetchWeather'])->name('weather.fetch');
+Route::resource('weather', WeatherController::class);
+Route::post('weather/fetch', [WeatherController::class, 'fetchWeather'])->name('weather.fetchWeather');
+
+Route::resource('maps', MapsController::class);

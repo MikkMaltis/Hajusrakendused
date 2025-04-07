@@ -2,15 +2,15 @@ import:
   - recipe/laravel.php
 
 config:
-  repository: '{repo url !!ssh!!}'
+  repository: 'git@github.com:MikkMaltis/Hajusrakendused.git'
   keep_releases: 2
 
 hosts:
   stage:
-    hostname: 'host'
-    http_user: siia_tuleb_http_user
-    remote_user: siia_tuleb_remote_user
-    deploy_path: '~/domeenid/{siia_tuleb_path}'
+    hostname: tak22maltis.itmajakas.ee
+    http_user: virt118438
+    remote_user: virt118438
+    deploy_path: '~/domeenid/www.tak22maltis.itmajakas.ee'
 
 tasks:
 
@@ -21,8 +21,8 @@ tasks:
     - 'deploy:prepare'
     - 'deploy:vendors'
     - 'artisan:storage:link'
-    - 'artisan:optimize:clear'
-    - 'artisan:optimize'
+    # 'artisan:optimize:clear'
+    # 'artisan:optimize'
     - 'deploy:publish'
 
 after:

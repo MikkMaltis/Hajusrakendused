@@ -9,7 +9,7 @@
 <body class="bg-[#BBE1C3] min-h-screen flex items-center justify-center">
     <div class="bg-[#1c1a1a] shadow-lg rounded-lg p-8 w-full max-w-md">
         <h1 class="text-2xl font-bold text-center text-[#f5f5f5]">Weather Forecast</h1>
-        <form method="POST" action="{{ route('weather.fetch') }}" class="space-y-4">
+        <form method="POST" action="{{ route('weather.fetchWeather') }}" class="space-y-4">
             @csrf
             <div>
                 <label for="city" class="block text-sm font-medium text-[#f5f5f5]">City</label>

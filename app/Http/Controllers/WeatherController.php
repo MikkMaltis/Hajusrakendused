@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -17,7 +18,7 @@ class WeatherController extends Controller
             'city' => 'required|string',
         ]);
 
-        $apiKey = env('WEATHER_API_KEY');
+        $apiKey = Config::get('services.openweathermap.key');
         $city = $request->input('city');
         $response = Http::get("https://api.openweathermap.org/data/2.5/weather", [
             'q' => $city,
@@ -27,7 +28,7 @@ class WeatherController extends Controller
 
         if ($response->successful()) {
             $weatherData = $response->json();
-            return view('weather.results', [
+            return view('weather.index', [
                 'weather' => $weatherData,
                 'additionalInfo' => [
                     'humidity' => $weatherData['main']['humidity'],
@@ -39,7 +40,7 @@ class WeatherController extends Controller
         }
 
         return back()->withErrors([
-            'city' => 'City not found or API error',
+            'city' => 'City not found or API error. ',
         ]);
     }
 }

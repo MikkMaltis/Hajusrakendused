@@ -15,7 +15,7 @@ return [
     */
 
     'postmark' => [
-        'token' => env('POSTMARK_TOKEN'),
+        'token' => env('POSTMARK_TOKEN')
     ],
 
     'ses' => [
@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'openweathermap'
+    => [
+        'key' => env('OPENWEATHERMAP_KEY'),
+    ],
+
+    'radar' => [
+        'key' => env('RADAR_API_KEY'),
+    ]
 ];
