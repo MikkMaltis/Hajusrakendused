@@ -27,10 +27,15 @@
 
         @if (isset($weather))
         <div class="mt-6 p-4 bg-[#BBE1C3] rounded-md">
-            <h2 class="text-lg font-semibold text-gray-800">Weather in {{ $weather['name'] }}</h2>
-            <p class="text-[#1c1c1c] flex items-center">
-                <i class="fas fa-thermometer-half mr-2"></i> Temperature: {{ $weather['main']['temp'] }}°C
-            </p>
+            <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+                <img src="http://openweathermap.org/img/wn/{{ $additionalInfo['icon'] }}@2x.png" alt="Weather Icon" class="w-8 h-8 mr-2">
+                Weather in {{ $weather['name'] }}
+            </h2>
+            <div class="flex items-center mt-4">
+                <p class="text-[#1c1c1c] flex items-center">
+                    <i class="fas fa-thermometer-half mr-2"></i> Temperature: {{ $weather['main']['temp'] }}°C
+                </p>
+            </div>
             <p class="text-[#1c1c1c] flex items-center">
                 <i class="fas fa-cloud mr-2"></i> Condition: {{ $weather['weather'][0]['description'] }}
             </p>
@@ -47,7 +52,7 @@
                 <i class="fas fa-compass mr-2"></i> Wind Direction: {{ $additionalInfo['wind_direction'] }}°
             </p>
         </div>
-    @endif
+        @endif
 
         @if ($errors->any())
             <div class="mt-6 p-4 bg-red-100 rounded-md">
