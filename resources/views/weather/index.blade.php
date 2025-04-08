@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-[#BBE1C3] min-h-screen flex items-center justify-center">
     <div class="bg-[#1c1a1a] shadow-lg rounded-lg p-8 w-full max-w-md">
@@ -25,16 +26,28 @@
         </form>
 
         @if (isset($weather))
-            <div class="mt-6 p-4 bg-blue-100 rounded-md">
-                <h2 class="text-lg font-semibold text-gray-800">Weather in {{ $weather['name'] }}</h2>
-                <p class="text-[#1c1c1c]">Temperature: {{ $weather['main']['temp'] }}°C</p>
-                <p class="text-[#1c1c1c]">Condition: {{ $weather['weather'][0]['description'] }}</p>
-                <p class="text-[#1c1c1c] mt-2">Feels Like: {{ $additionalInfo['feels_like'] }}°C</p>
-                <p class="text-[#1c1c1c] mt-2">Humidity: {{ $additionalInfo['humidity'] }}%</p>
-                <p class="text-[#1c1c1c] mt-2">Wind Speed: {{ $additionalInfo['wind_speed'] }} m/s</p>
-                <p class="text-[#1c1c1c] mt-2">Wind Direction: {{ $additionalInfo['wind_direction'] }}°</p>
-            </div>
-        @endif
+        <div class="mt-6 p-4 bg-[#BBE1C3] rounded-md">
+            <h2 class="text-lg font-semibold text-gray-800">Weather in {{ $weather['name'] }}</h2>
+            <p class="text-[#1c1c1c] flex items-center">
+                <i class="fas fa-thermometer-half mr-2"></i> Temperature: {{ $weather['main']['temp'] }}°C
+            </p>
+            <p class="text-[#1c1c1c] flex items-center">
+                <i class="fas fa-cloud mr-2"></i> Condition: {{ $weather['weather'][0]['description'] }}
+            </p>
+            <p class="text-[#1c1c1c] mt-2 flex items-center">
+                <i class="fas fa-temperature-low mr-2"></i> Feels Like: {{ $additionalInfo['feels_like'] }}°C
+            </p>
+            <p class="text-[#1c1c1c] mt-2 flex items-center">
+                <i class="fas fa-tint mr-2"></i> Humidity: {{ $additionalInfo['humidity'] }}%
+            </p>
+            <p class="text-[#1c1c1c] mt-2 flex items-center">
+                <i class="fas fa-wind mr-2"></i> Wind Speed: {{ $additionalInfo['wind_speed'] }} m/s
+            </p>
+            <p class="text-[#1c1c1c] mt-2 flex items-center">
+                <i class="fas fa-compass mr-2"></i> Wind Direction: {{ $additionalInfo['wind_direction'] }}°
+            </p>
+        </div>
+    @endif
 
         @if ($errors->any())
             <div class="mt-6 p-4 bg-red-100 rounded-md">
