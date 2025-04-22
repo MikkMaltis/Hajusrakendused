@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('markers', function (Blueprint $table) {
             $table->id();
@@ -17,7 +17,7 @@ return new class extends Migration
             $table->decimal('latitude', 10, 7);
             $table->decimal('longitude', 10, 7);
             $table->text('description')->nullable();
-            $table->timestamps();
+            $table->timestamps(); // created_at (added) & updated_at (edited)
         });
     }
 
