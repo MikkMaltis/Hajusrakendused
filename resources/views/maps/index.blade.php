@@ -68,11 +68,15 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('weather.index') }}">Weather</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link active" href="{{ route('maps.index') }}">Map</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('weather.index') }}">Weather</a>
+                        <a class="nav-link" href="{{ route('blog.index') }}">Blog</a>
                     </li>
                 </ul>
             </div>
@@ -317,7 +321,7 @@
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <button type="submit" class="btn btn-primary" id="submitBtn">Save Marker</button>
+                            <button style="background-color: #368f22" type="submit" class="btn btn-primary" id="submitBtn">Save Marker</button>
                             <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
                         </div>
                     `;
