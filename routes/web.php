@@ -57,7 +57,7 @@ Route::post('/remove-from-cart', [App\Http\Controllers\ProductController::class,
 
 // Payment routes
 Route::get('/checkout', [App\Http\Controllers\PaymentController::class, 'checkout'])->name('checkout');
-Route::post('/payment/process', [App\Http\Controllers\PaymentController::class, 'process'])->name('payment.process');
+Route::post('/payment/process', [App\Http\Controllers\PaymentController::class, 'processPayment'])->name('payment.process');
 Route::get('/payment/success', [App\Http\Controllers\PaymentController::class, 'success'])->name('payment.success');
 Route::get('/payment/cancel', [App\Http\Controllers\PaymentController::class, 'cancel'])->name('payment.cancel');
 

@@ -34,8 +34,9 @@ class PaymentController extends Controller
     /**
      * Process the checkout and redirect to Stripe
      */
-    public function process(Request $request)
+    public function processPayment(Request $request)
     {
+        dd('tere');
         // Validate customer information
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
@@ -58,8 +59,8 @@ class PaymentController extends Controller
                 ->with('error', 'Your cart is empty!');
         }
 
-        // Debug the Stripe key
-        if (empty(config('services.stripe.secret'))) {
+         // Debug the Stripe key
+         if (empty(config('services.stripe.secret'))) {
             return back()->with('error', 'Stripe secret key is not configured.');
         }
 
