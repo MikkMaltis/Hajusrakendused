@@ -58,6 +58,11 @@ class PaymentController extends Controller
                 ->with('error', 'Your cart is empty!');
         }
 
+        // Debug the Stripe key
+        if (empty(config('services.stripe.secret'))) {
+            return back()->with('error', 'Stripe secret key is not configured.');
+        }
+
         // Initialize Stripe
         Stripe::setApiKey(config('services.stripe.secret'));
 
