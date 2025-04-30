@@ -36,7 +36,7 @@ class PaymentController extends Controller
      */
     public function processPayment(Request $request)
     {
-        dd('tere');
+    
         // Validate customer information
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
