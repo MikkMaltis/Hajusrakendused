@@ -36,7 +36,7 @@ class ProductController extends Controller
 
         session()->put('cart', $cart);
 
-        return redirect()->back()->with('success', 'Product added to cart!');
+        return redirect()->back()->with('success', 'Product updated in cart');
     }
 
     public function cart()
@@ -52,7 +52,7 @@ class ProductController extends Controller
             session()->put('cart', $cart);
         }
 
-        return redirect()->back()->with('success', 'Cart updated!');
+        return redirect()->back()->with('success', 'Product updated in cart');
     }
 
     public function removeFromCart(Request $request)
@@ -65,6 +65,6 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'Product removed from cart!');
+        return redirect()->back()->with('success', 'Product updated in cart');
     }
 }

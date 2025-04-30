@@ -10,7 +10,8 @@
                     </div>
 
                     <h1 class="text-2xl font-bold mb-2">Payment Successful!</h1>
-                    <p class="text-gray-600 mb-6">Thank you for your purchase.</p>
+                    <p class="text-gray-600 mb-4">Thank you for your purchase. Your order has been processed.</p>
+                    <p class="text-gray-600 mb-6">Payment ID: {{ $order['payment_id'] }}</p>
 
                     <div class="bg-gray-50 rounded-lg p-6 mb-6 text-left">
                         <h2 class="text-lg font-semibold mb-2">Order Details</h2>

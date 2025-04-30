@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use Stripe\Stripe;
+use Stripe\Checkout\Session as StripeSession;
+use Stripe\Exception\ApiErrorException;
 
 class PaymentController extends Controller
 {
@@ -29,7 +32,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Process the payment
+     * Process the checkout and redirect to Stripe
      */
     public function process(Request $request)
     {
@@ -45,52 +48,110 @@ class PaymentController extends Controller
             'country' => 'required|string|max:255',
         ]);
 
-        // Generate a unique order ID
-        $orderId = 'ORD-' . Str::random(10);
+        // Store customer information in session
+        session(['customer_info' => $validated]);
 
-        // Store order information in session for processing
-        session(['pending_order' => [
-            'id' => $orderId,
-            'customer' => $validated,
-            'cart' => session('cart'),
-            'total' => $request->input('total'),
-            'created_at' => now(),
-        ]]);
-
-        // Redirect to payment gateway page
-        return view('payment.gateway', [
-            'orderId' => $orderId,
-            'total' => $request->input('total')
-        ]);
-    }
-
-    /**
-     * Simulate payment success
-     */
-    public function success()
-    {
-        // Check if there's a pending order
-        if (!session('pending_order')) {
-            return redirect()->route('products.index');
+        // Get cart items from session
+        $cart = session('cart');
+        if (!$cart || count($cart) == 0) {
+            return redirect()->route('products.index')
+                ->with('error', 'Your cart is empty!');
         }
 
-        $order = session('pending_order');
+        // Initialize Stripe
+        Stripe::setApiKey(config('services.stripe.secret'));
 
-        // Clear cart and pending order from session
-        session()->forget('cart');
-        session()->forget('pending_order');
+        try {
+            // Create line items for Stripe
+            $line_items = [];
+            foreach ($cart as $item) {
+                $line_items[] = [
+                    'price_data' => [
+                        'currency' => 'usd',
+                        'product_data' => [
+                            'name' => $item['name'],
+                        ],
+                        'unit_amount' => round($item['price'] * 100), // Stripe uses cents
+                    ],
+                    'quantity' => $item['quantity'],
+                ];
+            }
 
-        return view('payment.success', ['order' => $order]);
+            // Create Stripe checkout session
+            $stripeSession = StripeSession::create([
+                'payment_method_types' => ['card'],
+                'line_items' => $line_items,
+                'mode' => 'payment',
+                'success_url' => route('payment.success') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('payment.cancel'),
+                'customer_email' => $validated['email'],
+                'metadata' => [
+                    'order_id' => 'ORD-' . Str::random(10),
+                ],
+            ]);
+
+            // Store session ID in Laravel session
+            session(['stripe_session_id' => $stripeSession->id]);
+
+            // Redirect to Stripe Checkout
+            return redirect($stripeSession->url);
+
+        } catch (ApiErrorException $e) {
+            return back()->with('error', 'Error connecting to Stripe: ' . $e->getMessage());
+        }
     }
 
     /**
-     * Simulate payment failure
+     * Handle successful payment
+     */
+    public function success(Request $request)
+    {
+        Stripe::setApiKey(config('services.stripe.secret'));
+
+        $sessionId = $request->get('session_id');
+
+        try {
+            // Retrieve the checkout session to confirm payment
+            $session = StripeSession::retrieve($sessionId);
+
+            // If payment was successful
+            if ($session->payment_status === 'paid') {
+                // Prepare order data
+                $order = [
+                    'id' => $session->metadata->order_id,
+                    'customer' => session('customer_info'),
+                    'cart' => session('cart'),
+                    'total' => array_reduce(session('cart'), function($carry, $item) {
+                        return $carry + ($item['price'] * $item['quantity']);
+                    }, 0),
+                    'payment_id' => $session->payment_intent,
+                    'created_at' => now(),
+                ];
+
+                // Here you would typically store the order in your database
+                // For now, we'll just store it in the session for demo purposes
+                session(['last_order' => $order]);
+
+                // Clear cart and customer info from session
+                session()->forget(['cart', 'customer_info', 'stripe_session_id']);
+
+                return view('payment.success', ['order' => $order]);
+            }
+
+            return redirect()->route('cart')
+                ->with('error', 'Payment was not completed successfully.');
+
+        } catch (ApiErrorException $e) {
+            return redirect()->route('cart')
+                ->with('error', 'Error verifying payment: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Handle cancelled payment
      */
     public function cancel()
     {
-        // Pending order remains in session, but we clear the pending_order
-        session()->forget('pending_order');
-
         return redirect()->route('cart')
             ->with('error', 'Payment was cancelled. Your items are still in your cart.');
     }
