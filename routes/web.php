@@ -48,4 +48,17 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Product routes
+Route::get('/products', [App\Http\Controllers\ProductController::class, 'index'])->name('products.index');
+Route::post('/add-to-cart', [App\Http\Controllers\ProductController::class, 'addToCart'])->name('add.to.cart');
+Route::get('/cart', [App\Http\Controllers\ProductController::class, 'cart'])->name('cart');
+Route::post('/update-cart', [App\Http\Controllers\ProductController::class, 'updateCart'])->name('update.cart');
+Route::post('/remove-from-cart', [App\Http\Controllers\ProductController::class, 'removeFromCart'])->name('remove.from.cart');
+
+// Payment routes
+Route::get('/checkout', [App\Http\Controllers\PaymentController::class, 'checkout'])->name('checkout');
+Route::post('/payment/process', [App\Http\Controllers\PaymentController::class, 'process'])->name('payment.process');
+Route::get('/payment/success', [App\Http\Controllers\PaymentController::class, 'success'])->name('payment.success');
+Route::get('/payment/cancel', [App\Http\Controllers\PaymentController::class, 'cancel'])->name('payment.cancel');
+
 require __DIR__.'/auth.php';
