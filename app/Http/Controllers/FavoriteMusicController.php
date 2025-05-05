@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\FavoriteMusic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
 
 class FavoriteMusicController extends Controller
 {
@@ -14,7 +13,11 @@ class FavoriteMusicController extends Controller
      */
     public function index()
     {
-        $music = FavoriteMusic::all();
+        // Cache the music data for 60 minutes
+        $music = cache()->remember('favorite_music', 60 * 60, function () {
+            return FavoriteMusic::all();
+        });
+
         return view('music.index', compact('music'));
     }
 
@@ -40,6 +43,9 @@ class FavoriteMusicController extends Controller
         ]);
 
         FavoriteMusic::create($validated);
+
+        // Clear the cache when adding new music
+        cache()->forget('favorite_music');
 
         return redirect()->route('music.index')
             ->with('success', 'Music entry added successfully!');
@@ -76,6 +82,9 @@ class FavoriteMusicController extends Controller
 
         $music->update($validated);
 
+        // Clear the cache when updating music
+        cache()->forget('favorite_music');
+
         return redirect()->route('music.index')
             ->with('success', 'Music entry updated successfully!');
     }
@@ -87,32 +96,29 @@ class FavoriteMusicController extends Controller
     {
         $music->delete();
 
+        // Clear the cache when deleting music
+        cache()->forget('favorite_music');
+
         return redirect()->route('music.index')
             ->with('success', 'Music entry deleted successfully!');
     }
 
     /**
-     * Proxy requests to external API with caching.
+     * Proxy requests to external API to avoid CORS issues.
      */
     public function proxyExternalApi()
     {
-        // Cache key and duration (cache for 30 minutes)
-        $cacheKey = 'external_subjects_api';
-        $cacheDuration = 30 * 60;
+        try {
+            // Remove caching for external API
+            $response = Http::get('https://hajusrakendus.tak22jasin.itmajakas.ee/api/subjects');
 
-        // Try to get data from cache first
-        return Cache::remember($cacheKey, $cacheDuration, function () {
-            try {
-                $response = Http::get('https://hajusrakendus.tak22jasin.itmajakas.ee/api/subjects');
-
-                if ($response->successful()) {
-                    return $response->json();
-                }
-
-                return ['error' => 'Failed to fetch data'];
-            } catch (\Exception $e) {
-                return ['error' => $e->getMessage()];
+            if ($response->successful()) {
+                return $response->json();
             }
-        });
+
+            return ['error' => 'Failed to fetch data'];
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }
