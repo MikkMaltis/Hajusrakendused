@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WeatherController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FavoriteMusicController;
+use App\Http\Controllers\API\FavoriteMusicController as APIFavoriteMusicController;
 
 // Weather routes
 Route::resource('weather', WeatherController::class);
@@ -16,9 +18,20 @@ Route::post('/maps', [App\Http\Controllers\MarkerController::class, 'store'])->n
 Route::put('/maps/{marker}', [App\Http\Controllers\MarkerController::class, 'update'])->name('maps.update');
 Route::delete('/maps/{marker}', [App\Http\Controllers\MarkerController::class, 'destroy'])->name('maps.destroy');
 
-// Blog routes
+// Music routes
+Route::resource('music', FavoriteMusicController::class);
+
+// Music API tester route
+Route::get('/music/api/tester', function () {
+    return view('music.api_tester');
+})->name('music.api_tester');
+
+// External Music API route with caching
+Route::get('/music/external-api', [FavoriteMusicController::class, 'proxyExternalApi'])->name('music.external');
+
+// Add a home route that redirects to the music index
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('music.index');
 });
 
 Route::get('/dashboard', function () {
@@ -35,12 +48,13 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/blog/{post}', [BlogController::class, 'destroy'])->name('blog.destroy');
 });
 
-Route::post('/blog/{post}/comments', [CommentController::class, 'store'])->name('comments.store');
-Route::middleware(['auth'])->group(function () {
-    Route::get('/comments', [CommentController::class, 'index'])->name('comments.index');
-    Route::patch('/comments/{comment}/approve', [CommentController::class, 'approve'])->name('comments.approve');
-    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
-});
+// Comment routes
+Route::post('/posts/{post}/comments', [App\Http\Controllers\CommentController::class, 'store'])->name('comments.store');
+
+// Admin routes (protected by controller-level auth checks)
+Route::get('/comments', [App\Http\Controllers\CommentController::class, 'index'])->name('comments.index');
+Route::patch('/comments/{comment}/approve', [App\Http\Controllers\CommentController::class, 'approve'])->name('comments.approve');
+Route::delete('/comments/{comment}', [App\Http\Controllers\CommentController::class, 'destroy'])->name('comments.destroy');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

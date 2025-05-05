@@ -18,9 +18,11 @@
                     <x-nav-link :href="route('blog.index')" :active="request()->routeIs('blog.*')">
                         {{ __('Blog') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('comments.index')" :active="request()->routeIs('comments.index')">
-                        {{ __('Manage Comments') }}
-                    </x-nav-link>
+                    @if(auth()->check() && auth()->user()->is_admin)
+                        <x-nav-link :href="route('comments.index')" :active="request()->routeIs('comments.index')">
+                            {{ __('Manage Comments') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -81,9 +83,11 @@
             <x-responsive-nav-link :href="route('blog.index')" :active="request()->routeIs('blog.*')">
                 {{ __('Blog') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('comments.index')" :active="request()->routeIs('comments.index')">
-                {{ __('Manage Comments') }}
-            </x-responsive-nav-link>
+            @if(auth()->check() && auth()->user()->is_admin)
+                <x-responsive-nav-link :href="route('comments.index')" :active="request()->routeIs('comments.index')">
+                    {{ __('Manage Comments') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

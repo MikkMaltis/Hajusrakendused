@@ -18,11 +18,18 @@ class Post extends Model
         'title',
         'description',
         'content',
+        'name',
+        'email',
+        'password',
+        'is_admin',
     ];
 
     protected $casts = [
         'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'is_admin' => 'boolean',
     ];
 
     public function comments()
@@ -33,5 +40,10 @@ class Post extends Model
     public function approvedComments()
     {
         return $this->hasMany(Comment::class)->where('is_approved', true);
+    }
+
+    public function isAdmin()
+    {
+        return $this->is_admin;
     }
 }
